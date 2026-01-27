@@ -116,26 +116,27 @@
 
   <!-- MathJax -->
   <script>
-    MathJax = {
+    window.MathJax = {
       tex: {
-        inlineMath: [['$', '$'], ['\(', '\)']],
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
         macros: {
-          vx: "\mathbf{x}",
-          vy: "\mathbf{y}",
-          vz: "\mathbf{z}",
-          vu: "\mathbf{u}",
-          A:  "\mathcal{A}",
-          Adag: "\mathcal{A}^{\dagger}",
-          Id: "\mathrm{Id}",
-          encoder: "\mathcal{E}",
-          decoder: "\mathcal{D}",
-          prox:    "\operatorname{prox}",
-          argmin:  "\operatorname*{arg\,min}"
+          vx: "\\mathbf{x}",
+          vy: "\\mathbf{y}",
+          vz: "\\mathbf{z}",
+          vu: "\\mathbf{u}",
+          A: "\\mathcal{A}",
+          Adag: "\\mathcal{A}^{\\dagger}",
+          Id: "\\mathrm{Id}",
+          encoder: "\\mathcal{E}",
+          decoder: "\\mathcal{D}",
+          prox: "\\operatorname{prox}",
+          argmin: "\\operatorname*{arg\\,min}"
         }
       }
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 
   <style>
     .wide-banner { width: 100%; height: auto; display: block; }
