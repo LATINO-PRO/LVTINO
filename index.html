@@ -47,6 +47,39 @@
   <script src="static/js/bulma-carousel.min.js"></script>
   <script src="static/js/bulma-slider.min.js"></script>
   <script src="static/js/index.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+
+  <script>
+    function initVideoComparisons() {
+      const sliders = document.querySelectorAll('img-comparison-slider.video-compare');
+
+      sliders.forEach((slider) => {
+        const vids = slider.querySelectorAll('video');
+        vids.forEach(v => {
+          v.muted = true;
+          v.playsInline = true;
+          v.loop = true;
+        });
+
+        // attempt autoplay (muted+playsinline usually works)
+        vids.forEach(v => v.play().catch(() => {}));
+
+        // keep both sides roughly in sync
+        if (vids.length === 2) {
+          const [a, b] = vids;
+          const sync = (src, dst) => {
+            if (Math.abs((dst.currentTime || 0) - (src.currentTime || 0)) > 0.08) {
+              dst.currentTime = src.currentTime;
+            }
+          };
+          a.addEventListener('timeupdate', () => sync(a, b));
+          b.addEventListener('timeupdate', () => sync(b, a));
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', initVideoComparisons);
+  </script>
 
   <!-- MathJax -->
   <script>
@@ -105,6 +138,48 @@
     .algo-code .indent1::before{ left: 1em; }
     .algo-code .indent2{ padding-left: 4.5em; }
     .algo-code .indent2::before{ left: 2em; }
+  </style>
+
+  <style>
+    /* ───────────────── slider grid ───────────────── */
+    .slider-grid{
+      --gap: 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr;          /* phones: 1 col */
+      gap: var(--gap);
+      padding: var(--gap);
+      max-width: 1200px;
+      margin-inline: auto;
+      box-sizing: border-box;
+    }
+
+    /* tablets → 2 columns */
+    @media (min-width: 600px){
+      .slider-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* desktops → 3 columns */
+    @media (min-width: 992px){
+      .slider-grid{ grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ───────────────── slider look ───────────────── */
+    img-comparison-slider{
+      width: 100%;
+      aspect-ratio: 1 / 1;          /* square cell */
+      --divider-width: 4px;
+      --divider-color: #ffffffaa;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,.15);
+      overflow: hidden;
+    }
+
+    img-comparison-slider img,
+    img-comparison-slider video{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   </style>
 
   <style>
@@ -199,6 +274,35 @@
       </div>
     </div>
   </section>
+
+  <!-- Video slider -->
+  <section class="hero is-small">
+    <div class="slider-grid">
+
+      <!-- Slider 1 -->
+      <img-comparison-slider value="50" class="video-compare">
+        <video slot="first"  src="static/videos/video1/obs.mp4"  muted playsinline loop preload="metadata"></video>
+        <video slot="second" src="static/videos/video1/out.mp4" muted playsinline loop preload="metadata"></video>
+      </img-comparison-slider>
+
+      <!-- Slider 2 -->
+      <img-comparison-slider value="50" class="video-compare">
+        <video slot="first"  src="static/videos/video2/obs.mp4"  muted playsinline loop preload="metadata"></video>
+        <video slot="second" src="static/videos/video2/out.mp4" muted playsinline loop preload="metadata"></video>
+      </img-comparison-slider>
+
+      <!-- Slider 3 -->
+      <img-comparison-slider value="50" class="video-compare">
+        <video slot="first"  src="static/videos/video3/obs.mp4"  muted playsinline loop preload="metadata"></video>
+        <video slot="second" src="static/videos/video3/out.mp4" muted playsinline loop preload="metadata"></video>
+      </img-comparison-slider>
+
+      <!-- Add more sliders as needed -->
+
+    </div>
+  </section>
+  <!-- End video slider -->
+
 
   <!-- Teaser -->
   <div class="my-5">
