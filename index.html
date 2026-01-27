@@ -343,17 +343,6 @@
   </section>
   <!-- End video slider -->
 
-
-  <!-- Teaser -->
-  <div class="my-5">
-    <figure class="has-text-centered">
-      <img src="static/images/teaser.png" alt="LVTINO teaser figure" class="wide-banner">
-      <figcaption class="has-text-grey is-size-6 mt-2">
-        Results on joint spatial-temporal super-resolution by factor ×8.
-      </figcaption>
-    </figure>
-  </div>
-
   <!-- Abstract -->
   <section class="section hero is-light">
     <div class="container is-max-desktop">
@@ -368,6 +357,16 @@
     </div>
   </section>
 
+  <!-- Teaser -->
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/images/teaser.png" alt="LVTINO teaser figure" class="wide-banner">
+      <figcaption class="has-text-grey is-size-6 mt-2">
+        Results on joint spatial-temporal super-resolution by factor ×8.
+      </figcaption>
+    </figure>
+  </div>
+
   <!-- Method overview -->
   <div class="my-5">
     <figure class="has-text-centered">
@@ -381,7 +380,7 @@
   <!-- Algorithm -->
   <figure class="my-5">
     <figcaption class="has-text-weight-bold has-text-centered mb-2">
-      Algorithm&nbsp;1:&nbsp;LVTINO (as in the paper, lightly re-formatted)
+      Algorithm&nbsp;1:&nbsp;LVTINO
     </figcaption>
 
     <ol class="algo-code">
@@ -411,7 +410,7 @@
         \decoder_V\!\bigl(f^V_{\vartheta}(\vz^{(V)}_{t^{(V)}_k},\, t^{(V)}_k)\bigr)$
       </li>
 
-      <li class="indent1"><em># First likelihood step (prox-splitting / Adam in the paper)</em></li>
+      <li class="indent1"><em># First likelihood step (prox-splitting / Adam)</em></li>
       <li class="indent1">
         $\tilde{\vx}^{(k+1/2)} \leftarrow
         \argmin_{u}\; g_{\vy}(u) + \phi_{\lambda}(u) +
@@ -434,7 +433,7 @@
         \Bigr)$
       </li>
 
-      <li class="indent2"><em># Second likelihood step (CG in the paper)</em></li>
+      <li class="indent2"><em># Second likelihood step (CG in practice)</em></li>
       <li class="indent2">
         $\vx^{(k+1)} \leftarrow
         \argmin_{u}\; g_{\vy}(u) +
