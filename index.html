@@ -256,25 +256,30 @@
   </style>
 
   <style>
-    /* Scroll container */
+    /* Mobile: allow horizontal scroll so math stays inside the box */
     .algo-scroll{
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Mobile: keep everything inside and allow horizontal scrolling */
+    /* The algorithm block itself (content stays left-aligned) */
     .algo-scroll .algo-code{
-      display: inline-block;
-      white-space: nowrap;
-      min-width: 100%;
+      display: inline-block;   /* lets the block be centered by the parent */
+      text-align: left;        /* keep LaTeX/content left-aligned */
+      min-width: 100%;         /* on mobile, fill width */
+      white-space: nowrap;     /* avoid breaking long math; scroll instead */
     }
 
-    /* Desktop/tablet: center the algorithm block */
+    /* Desktop/tablet: center the block, but keep content left-aligned */
     @media (min-width: 768px){
+      .algo-scroll{
+        display: flex;
+        justify-content: center;  /* center the block */
+      }
       .algo-scroll .algo-code{
-        min-width: auto;        /* shrink-to-fit content width */
-        max-width: 100%;        /* never exceed container */
-        white-space: normal;    /* allow wrapping on larger screens */
+        min-width: auto;          /* shrink-to-fit */
+        max-width: 100%;
+        white-space: normal;      /* allow wrapping on big screens */
       }
     }
   </style>
