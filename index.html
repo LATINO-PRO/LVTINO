@@ -255,6 +255,21 @@
     }
   </style>
 
+  <style>
+    /* Make long math in the algorithm horizontally scrollable (mobile-friendly) */
+    .algo-scroll{
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+    }
+
+    /* Ensure the algorithm content doesn't wrap weirdly */
+    .algo-scroll .algo-code{
+      display: inline-block;   /* allow intrinsic width */
+      min-width: 100%;         /* but at least fill container */
+      white-space: nowrap;     /* prevent line breaks inside long LaTeX */
+    }
+  </style>
+
 </head>
 
 <body>
@@ -400,68 +415,70 @@
     <figcaption class="has-text-weight-bold has-text-centered mb-2">
       Algorithm&nbsp;1:&nbsp;LVTINO
     </figcaption>
+    
+    <div class="algo-scroll">
+      <ol class="algo-code">
+        <li>
+          <strong>Given</strong> degraded video $\vy$, operator $\A$,
+          initialization $\vx^{(0)} = \Adag \vy$, video length $T+1$, steps $N=5$.
+        </li>
 
-    <ol class="algo-code">
-      <li>
-        <strong>Given</strong> degraded video $\vy$, operator $\A$,
-        initialization $\vx^{(0)} = \Adag \vy$, video length $T+1$, steps $N=5$.
-      </li>
+        <li>
+          <strong>Given</strong> video CM $(\encoder_V,\decoder_V,f^V_{\vartheta})$,
+          image CM $(\encoder_I,\decoder_I,f^I_{\theta})$,
+          schedules $\{t^{(V)}_k,\, t^{(I)}_k,\, \delta_k,\, \eta,\, \lambda\}_{k=0}^{N-1}$,
+          data term $g_{\vy}$.
+        </li>
 
-      <li>
-        <strong>Given</strong> video CM $(\encoder_V,\decoder_V,f^V_{\vartheta})$,
-        image CM $(\encoder_I,\decoder_I,f^I_{\theta})$,
-        schedules $\{t^{(V)}_k,\, t^{(I)}_k,\, \delta_k,\, \eta,\, \lambda\}_{k=0}^{N-1}$,
-        data term $g_{\vy}$.
-      </li>
+        <li><strong>For</strong> $k=0,\ldots,N-1$</li>
 
-      <li><strong>For</strong> $k=0,\ldots,N-1$</li>
+        <li class="indent1"><em># VCM prior half-step (temporal coherence)</em></li>
+        <li class="indent1">$\epsilon_V \sim \mathcal{N}(0,\Id)$</li>
+        <li class="indent1">
+          $\vz^{(V)}_{t^{(V)}_k} \leftarrow
+          \sqrt{\alpha_{t^{(V)}_k}}\,\encoder_V\!\bigl(\vx^{(k)}\bigr) +
+          \sqrt{1-\alpha_{t^{(V)}_k}}\,\epsilon_V$
+        </li>
+        <li class="indent1">
+          $\tilde{\vx}^{(k+1/4)} \leftarrow
+          \decoder_V\!\bigl(f^V_{\vartheta}(\vz^{(V)}_{t^{(V)}_k},\, t^{(V)}_k)\bigr)$
+        </li>
 
-      <li class="indent1"><em># VCM prior half-step (temporal coherence)</em></li>
-      <li class="indent1">$\epsilon_V \sim \mathcal{N}(0,\Id)$</li>
-      <li class="indent1">
-        $\vz^{(V)}_{t^{(V)}_k} \leftarrow
-        \sqrt{\alpha_{t^{(V)}_k}}\,\encoder_V\!\bigl(\vx^{(k)}\bigr) +
-        \sqrt{1-\alpha_{t^{(V)}_k}}\,\epsilon_V$
-      </li>
-      <li class="indent1">
-        $\tilde{\vx}^{(k+1/4)} \leftarrow
-        \decoder_V\!\bigl(f^V_{\vartheta}(\vz^{(V)}_{t^{(V)}_k},\, t^{(V)}_k)\bigr)$
-      </li>
+        <li class="indent1"><em># First likelihood step (prox-splitting / Adam)</em></li>
+        <li class="indent1">
+          $\tilde{\vx}^{(k+1/2)} \leftarrow
+          \argmin_{u}\; g_{\vy}(u) + \phi_{\lambda}(u) +
+          \frac{1}{2\delta_k\eta}\,\bigl\|\tilde{\vx}^{(k+1/4)}-u\bigr\|_2^2$
+        </li>
 
-      <li class="indent1"><em># First likelihood step (prox-splitting / Adam)</em></li>
-      <li class="indent1">
-        $\tilde{\vx}^{(k+1/2)} \leftarrow
-        \argmin_{u}\; g_{\vy}(u) + \phi_{\lambda}(u) +
-        \frac{1}{2\delta_k\eta}\,\bigl\|\tilde{\vx}^{(k+1/4)}-u\bigr\|_2^2$
-      </li>
+        <li class="indent1"><strong>If</strong> $k < N-1$</li>
 
-      <li class="indent1"><strong>If</strong> $k < N-1$</li>
+        <li class="indent2"><em># ICM prior half-step (per-frame detail)</em></li>
+        <li class="indent2">$\epsilon_I \sim \mathcal{N}(0,\Id)$</li>
+        <li class="indent2">
+          $\tilde{\vx}^{(k+3/4)} \leftarrow
+          \operatorname{stack}_{\tau=0}^T\;
+          \decoder_I\!\Bigl(
+            f^I_{\theta}\bigl(
+              \sqrt{\alpha_{t^{(I)}_k}}\,\encoder_I(\tilde{\vx}^{(k+1/2)},\,\tau) +
+              \sqrt{1-\alpha_{t^{(I)}_k}}\,\epsilon_I,\;
+              t^{(I)}_k
+            \bigr)
+          \Bigr)$
+        </li>
 
-      <li class="indent2"><em># ICM prior half-step (per-frame detail)</em></li>
-      <li class="indent2">$\epsilon_I \sim \mathcal{N}(0,\Id)$</li>
-      <li class="indent2">
-        $\tilde{\vx}^{(k+3/4)} \leftarrow
-        \operatorname{stack}_{\tau=0}^T\;
-        \decoder_I\!\Bigl(
-          f^I_{\theta}\bigl(
-            \sqrt{\alpha_{t^{(I)}_k}}\,\encoder_I(\tilde{\vx}^{(k+1/2)},\,\tau) +
-            \sqrt{1-\alpha_{t^{(I)}_k}}\,\epsilon_I,\;
-            t^{(I)}_k
-          \bigr)
-        \Bigr)$
-      </li>
+        <li class="indent2"><em># Second likelihood step (CG in practice)</em></li>
+        <li class="indent2">
+          $\vx^{(k+1)} \leftarrow
+          \argmin_{u}\; g_{\vy}(u) +
+          \frac{1}{2\delta_k(1-\eta)}\,\bigl\|\tilde{\vx}^{(k+3/4)}-u\bigr\|_2^2$
+        </li>
 
-      <li class="indent2"><em># Second likelihood step (CG in practice)</em></li>
-      <li class="indent2">
-        $\vx^{(k+1)} \leftarrow
-        \argmin_{u}\; g_{\vy}(u) +
-        \frac{1}{2\delta_k(1-\eta)}\,\bigl\|\tilde{\vx}^{(k+3/4)}-u\bigr\|_2^2$
-      </li>
+        <li class="indent1"><strong>Else</strong> $\vx^{(k+1)} \leftarrow \tilde{\vx}^{(k+1/2)}$</li>
 
-      <li class="indent1"><strong>Else</strong> $\vx^{(k+1)} \leftarrow \tilde{\vx}^{(k+1/2)}$</li>
-
-      <li><strong>Return</strong> $\vx^{(N)}$</li>
-    </ol>
+        <li><strong>Return</strong> $\vx^{(N)}$</li>
+      </ol>
+    </div>
   </figure>
 
 
