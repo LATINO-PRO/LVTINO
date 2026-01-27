@@ -50,6 +50,30 @@
   <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
 
   <script>
+    function setSliderAspectFromVideos(slider) {
+      const vids = slider.querySelectorAll('video');
+      if (vids.length !== 2) return;
+
+      const [a, b] = vids;
+
+      const wa = a.videoWidth  || 0, ha = a.videoHeight || 0;
+      const wb = b.videoWidth  || 0, hb = b.videoHeight || 0;
+
+      // Wait until metadata is loaded for both
+      if (!wa || !ha || !wb || !hb) return;
+
+      // Choose the “dominant” resolution to define the displayed aspect ratio.
+      // (You can also choose based on area.)
+      const areaA = wa * ha;
+      const areaB = wb * hb;
+
+      const W = areaA >= areaB ? wa : wb;
+      const H = areaA >= areaB ? ha : hb;
+
+      // Set slider ratio to match the higher-res video
+      slider.style.aspectRatio = `${W} / ${H}`;
+    }
+
     function initVideoComparisons() {
       const sliders = document.querySelectorAll('img-comparison-slider.video-compare');
 
@@ -59,27 +83,36 @@
           v.muted = true;
           v.playsInline = true;
           v.loop = true;
+          v.preload = "metadata";
         });
 
-        // attempt autoplay (muted+playsinline usually works)
+        // When metadata is ready, set correct aspect ratio
+        vids.forEach(v => {
+          v.addEventListener('loadedmetadata', () => {
+            setSliderAspectFromVideos(slider);
+          }, { once: false });
+        });
+
+        // Try to start playback (muted autoplay usually works)
         vids.forEach(v => v.play().catch(() => {}));
 
-        // keep both sides roughly in sync
+        // Optional: sync playback times
         if (vids.length === 2) {
-          const [a, b] = vids;
+          const [va, vb] = vids;
           const sync = (src, dst) => {
             if (Math.abs((dst.currentTime || 0) - (src.currentTime || 0)) > 0.08) {
               dst.currentTime = src.currentTime;
             }
           };
-          a.addEventListener('timeupdate', () => sync(a, b));
-          b.addEventListener('timeupdate', () => sync(b, a));
+          va.addEventListener('timeupdate', () => sync(va, vb));
+          vb.addEventListener('timeupdate', () => sync(vb, va));
         }
       });
     }
 
     document.addEventListener('DOMContentLoaded', initVideoComparisons);
   </script>
+
 
   <!-- MathJax -->
   <script>
@@ -166,7 +199,9 @@
     /* ───────────────── slider look ───────────────── */
     img-comparison-slider{
       width: 100%;
-      aspect-ratio: 1 / 1;          /* square cell */
+      /*aspect-ratio: 1 / 1;          /* square cell */
+      /* remove fixed aspect ratio; we’ll set it from JS based on the video */
+      aspect-ratio: auto;
       --divider-width: 4px;
       --divider-color: #ffffffaa;
       border-radius: 8px;
@@ -175,10 +210,14 @@
     }
 
     img-comparison-slider img,
-    img-comparison-slider video{
+    img-comparison-slider.video-compare{
+      display: block;
+    }
+    img-comparison-slider.video-compare video{
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;   /* preserves full frame without cropping */
+      background: black;     /* avoids odd borders if aspect mismatch */
     }
   </style>
 
