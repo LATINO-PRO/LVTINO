@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <!-- Google tag (gtag.js) -->
+  <!-- TODO: replace the measurement id with yours -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script> -->
+
+  <meta charset="utf-8">
+
+  <!-- Social media banners -->
+  <meta name="description" content="LVTINO">
+  <meta property="og:title" content="LVTINO"/>
+  <meta property="og:description" content="LVTINO: LAtent Video consisTency INverse sOlver for High Definition Video Restoration"/>
+  <meta property="og:url" content="https://latino-pro.github.io/LVTINO/"/>
+  <meta property="og:image" content="static/images/teaser.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+
+  <meta name="twitter:title" content="LVTINO">
+  <meta name="twitter:description" content="LVTINO: Latent Video Consistency Inverse Solver for High Definition Video Restoration">
+  <meta name="twitter:image" content="static/images/teaser.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="keywords" content="video restoration, inverse problems, plug-and-play, diffusion, consistency models, VCM">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>LVTINO</title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+
+  <!-- MathJax -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        macros: {
+          vx: "\mathbf{x}",
+          vy: "\mathbf{y}",
+          vz: "\mathbf{z}",
+          vu: "\mathbf{u}",
+          A:  "\mathcal{A}",
+          Adag: "\mathcal{A}^{\dagger}",
+          Id: "\mathrm{Id}",
+          encoder: "\mathcal{E}",
+          decoder: "\mathcal{D}",
+          prox:    "\operatorname{prox}",
+          argmin:  "\operatorname*{arg\,min}"
+        }
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    .wide-banner { width: 100%; height: auto; display: block; }
+  </style>
+
+  <!-- Algorithm-style list -->
+  <style>
+    .algo-code{
+      counter-reset: line;
+      border: 1px solid #e1e1e1;
+      border-radius: 6px;
+      background: #fafafa;
+      padding: 1rem 1.25rem;
+      font-family: "Courier New", monospace;
+      font-size: 0.92rem;
+    }
+    .algo-code li{
+      list-style: none;
+      position: relative;
+      padding-left: 2.5em;
+      margin: 0.25rem 0;
+    }
+    .algo-code li::before{
+      counter-increment: line;
+      content: counter(line);
+      position: absolute;
+      left: 0;
+      width: 2em;
+      text-align: right;
+      color: #606060;
+    }
+    .algo-code .indent1{ padding-left: 3.5em; }
+    .algo-code .indent1::before{ left: 1em; }
+    .algo-code .indent2{ padding-left: 4.5em; }
+    .algo-code .indent2::before{ left: 2em; }
+  </style>
+
+  <style>
+    @media (max-width: 600px) {
+      .publication-title { font-size: 1.75rem !important; line-height: 1.2; }
+    }
+    @media (min-width: 600px) {
+      figure.has-text-centered img, figure.has-text-centered figcaption, ol.algo-code {
+        width: 80%; height: auto; margin: 0 auto;
+      }
+    }
+    @media (min-width: 992px) {
+      figure.has-text-centered img, figure.has-text-centered figcaption, ol.algo-code {
+        width: 60%; height: auto; margin: 0 auto;
+      }
+    }
+  </style>
+
+  <style>
+    /* lightweight, reusable tooltip */
+    .coming-tooltip{
+      position: fixed;
+      pointer-events: none;
+      background: #222;
+      color: #fff;
+      font-size: 0.8rem;
+      padding: 0.3em 0.55em;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 10000;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Header / title -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">LVTINO: LAtent Video consisTency INverse sOlver for High Definition Video Restoration</h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><a href="https://scholar.google.com/citations?user=Xmr-06oAAAAJ&hl=en" target="_blank">Alessio Spagnoletti</a>, <a href="https://scholar.google.com/citations?user=e1pFlV0AAAAJ&hl=en" target="_blank">Andrés Almansa</a>, <a href="https://scholar.google.com/citations?user=ep85sxQAAAAJ&hl=en" target="_blank">Marcelo Pereyra</a></span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="conf-block">ICLR 2026</span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+
+                <!-- Paper -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/pdf/2510.01339.pdf" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+
+                <!-- Code -->
+                <span class="link-block">
+                  <!-- TODO: point this to your repo -->
+                  <a id="github-btn" href="https://github.com/LATINO-PRO/LVTINO" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Code</span>
+                  </a>
+                </span>
+
+                <!-- arXiv -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2510.01339" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="ai ai-arxiv"></i></span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Teaser -->
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/images/teaser.png" alt="LVTINO teaser figure" class="wide-banner">
+      <figcaption class="has-text-grey is-size-6 mt-2">
+        Results on joint spatial-temporal super-resolution by factor ×8 (teaser from the paper PDF).
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Abstract -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>Computational imaging methods increasingly rely on powerful generative diffusion models to tackle challenging image restoration tasks. In particular, state-of-the-art zero-shot image inverse solvers leverage distilled text-to-image latent diffusion models (LDMs) to achieve unprecedented accuracy and perceptual quality with high computational efficiency. However, extending these advances to high-definition video restoration remains a significant challenge, due to the need to recover fine spatial detail while capturing subtle temporal dependencies. Consequently, methods that naively apply image-based LDM priors on a frame-by-frame basis often result in temporally inconsistent reconstructions. We address this challenge by leveraging recent advances in Video Consistency Models (VCMs), which distill video latent diffusion models into fast generators that explicitly capture temporal causality. Building on this foundation, we propose LVTINO, the first zero-shot or plug-and-play inverse solver for high definition video restoration with priors encoded by VCMs. Our conditioning mechanism bypasses the need for automatic differentiation and achieves state-of-the-art video reconstruction quality with only a few neural function evaluations, while ensuring strong measurement consistency and smooth temporal transitions across frames. Extensive experiments on a diverse set of video inverse problems show significant perceptual improvements over current state-of-the-art methods that apply image LDMs frame by frame, establishing a new benchmark in both reconstruction fidelity and computational efficiency.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method overview -->
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/images/pipe.png" alt="One solver step" class="wide-banner">
+      <figcaption class="has-text-grey is-size-6 mt-2">
+        One solver step (two SAE prior half-steps + two proximal likelihood steps) in LVTINO.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Algorithm -->
+  <figure class="my-5">
+    <figcaption class="has-text-weight-bold has-text-centered mb-2">
+      Algorithm&nbsp;1:&nbsp;LVTINO (as in the paper, lightly re-formatted)
+    </figcaption>
+
+    <ol class="algo-code">
+      <li><strong>Given</strong> degraded video $y$, operator $\A$, initialization $x^{(0)} = \Adag y$, video length $T+1$, steps $N=5$.</li>
+      <li><strong>Given</strong> video CM $(\encoder_V,\decoder_V,f^V_artheta)$, image CM $(\encoder_I,\decoder_I,f^I_	heta)$, schedules $\{t^{(V)}_k, t^{(I)}_k, \delta_k, \eta, \lambda\}_{k=0}^{N-1}$, data term $g_y$.</li>
+      <li><strong>For</strong> $k=0,\ldots,N-1$</li>
+
+      <li class="indent1"><em># VCM prior half-step (temporal coherence)</em></li>
+      <li class="indent1">$\epsilon_V \sim \mathcal{N}(0,\Id)$</li>
+      <li class="indent1">$z^{(V)}_{t^{(V)}_k} \leftarrow \sqrt{lpha_{t^{(V)}_k}}\,\encoder_V(x^{(k)}) + \sqrt{1-lpha_{t^{(V)}_k}}\,\epsilon_V$</li>
+      <li class="indent1">$	ilde{x}^{(k+1/4)} \leftarrow \decoder_V\!igl(f^V_artheta(z^{(V)}_{t^{(V)}_k}, t^{(V)}_k)igr)$</li>
+
+      <li class="indent1"><em># First likelihood step (prox-splitting / Adam in the paper)</em></li>
+      <li class="indent1">$	ilde{x}^{(k+1/2)} \leftarrow rgmin_u\; g_y(u) + \phi_\lambda(u) + 	frac{1}{2\delta_k\eta}\,\|	ilde{x}^{(k+1/4)}-u\|_2^2$</li>
+
+      <li class="indent1"><strong>If</strong> $k < N-1$</li>
+
+      <li class="indent2"><em># ICM prior half-step (per-frame detail)</em></li>
+      <li class="indent2">$\epsilon_I \sim \mathcal{N}(0,\Id)$</li>
+      <li class="indent2">$	ilde{x}^{(k+3/4)} \leftarrow \operatorname{stack}_{	au=0}^T\; \decoder_I\!\Bigl(f^I_	hetaigl(\sqrt{lpha_{t^{(I)}_k}}\,\encoder_I(	ilde{x}^{(k+1/2)},	au) + \sqrt{1-lpha_{t^{(I)}_k}}\,\epsilon_I,\; t^{(I)}_kigr)\Bigr)$</li>
+
+      <li class="indent2"><em># Second likelihood step (CG in the paper)</em></li>
+      <li class="indent2">$x^{(k+1)} \leftarrow rgmin_u\; g_y(u) + 	frac{1}{2\delta_k(1-\eta)}\,\|	ilde{x}^{(k+3/4)}-u\|_2^2$</li>
+
+      <li class="indent1"><strong>Else</strong> $x^{(k+1)} \leftarrow 	ilde{x}^{(k+1/2)}$</li>
+
+      <li><strong>Return</strong> $x^{(N)}$</li>
+    </ol>
+  </figure>
+
+  <!-- Quantitative results -->
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/tables/table_adobe240.png" alt="Table Adobe240">
+      <figcaption class="has-text-grey is-size-6 mt-2">Adobe240: quantitative results across Problems A/B/C (best in bold, second best underlined in the paper).</figcaption>
+    </figure>
+  </div>
+
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/tables/table_gopro240.png" alt="Table GoPro240">
+      <figcaption class="has-text-grey is-size-6 mt-2">GoPro240: quantitative results across Problems A/B/C (best in bold, second best underlined in the paper).</figcaption>
+    </figure>
+  </div>
+
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/tables/table_runtime_memory.png" alt="Table runtime and memory">
+      <figcaption class="has-text-grey is-size-6 mt-2">Runtime & memory footprint (25 frames at 1280×768) as reported in the paper.</figcaption>
+    </figure>
+  </div>
+
+  <!-- Visual comparisons -->
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/images/figure3_slices.png" alt="Slices comparison">
+      <figcaption class="has-text-grey is-size-6 mt-2">Fixed-column (i, τ) slices over 81 consecutive frames for Problem C (seq. C2): LVTINO reduces flicker and improves temporal consistency.</figcaption>
+    </figure>
+  </div>
+
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/images/figure4_visual_comparison.png" alt="Visual comparison Problem A">
+      <figcaption class="has-text-grey is-size-6 mt-2">Problem A (seq. A1): LVTINO recovers coherent motion while sharpening spatial details.</figcaption>
+    </figure>
+  </div>
+
+  <div class="my-5">
+    <figure class="has-text-centered">
+      <img src="static/images/figure5_visual_comparison.png" alt="Visual comparison Problem B">
+      <figcaption class="has-text-grey is-size-6 mt-2">Problem B (seq. B2): LVTINO mitigates flickering artifacts compared to an image-based baseline.</figcaption>
+    </figure>
+  </div>
+
+  <!-- BibTeX -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@misc{spagnoletti2025lvtino,
+      title={LVTINO: LAtent Video consisTency INverse sOlver for High Definition Video Restoration}, 
+      author={Alessio Spagnoletti and Andrés Almansa and Marcelo Pereyra},
+      year={2025},
+      eprint={2510.01339},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2510.01339},
+}</code></pre>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This page was built using the
+              <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>
+              which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+              You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br>
+              This website is licensed under a
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    (function () {
+      const btn = document.getElementById('github-btn');
+      if (!btn) return;
+
+      const tip = Object.assign(document.createElement('div'), {
+        className: 'coming-tooltip',
+        textContent: 'Coming soon!'
+      });
+      document.body.appendChild(tip);
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        tip.style.left = (e.clientX + 12) + 'px';
+        tip.style.top  = (e.clientY - 12) + 'px';
+        tip.style.opacity = '1';
+        clearTimeout(tip._hideTimer);
+        tip._hideTimer = setTimeout(() => tip.style.opacity = '0', 1200);
+      });
+    })();
+  </script>
+
+</body>
+</html>
