@@ -3,8 +3,8 @@
 
 This repository contains the official implementation of **LVTINO**, a plug-and-play / zero-shot inverse solver for **high-definition video restoration** using priors encoded by **Video Consistency Models (VCMs)**.
 
-- **Paper (arXiv):** https://arxiv.org/abs/2510.01339  
-- **Web-Page:** https://github.com/LATINO-PRO/LVTINO
+- [**Paper (arXiv)**](https://arxiv.org/abs/2510.01339)
+- [**Web-Page**](https://latino-pro.github.io/LVTINO/)
 
 ---
 
