@@ -162,7 +162,7 @@ python minimal_inference/LVTINO_optuna.py \
   --operator "tblur_sr" \
   --optuna \
   --optuna_trials 500 \
-  --optuna_storage "sqlite:////study.db" \
+  --optuna_storage "sqlite:////path_to_study/study.db" \
   --optuna_videos 1 \
   --optuna_T 25 \
   --optuna_objective "lpips" \
@@ -180,7 +180,7 @@ python minimal_inference/LVTINO_VIDUE_optuna.py \
   --frames_root "./adobe_frames" \
   --optuna \
   --optuna_trials 500 \
-  --optuna_storage "sqlite:////study.db" \
+  --optuna_storage "sqlite:////path_to_study/study.db" \
   --optuna_videos 1 \
   --optuna_T 25 \
   --optuna_objective "lpips" \
