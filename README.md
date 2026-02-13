@@ -64,7 +64,6 @@ pip install -U pip setuptools wheel
 ```
 
 ### 3) Install dependencies
-First try:
 ```bash
 pip install -r requirements.txt
 ```
