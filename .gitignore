@@ -182,9 +182,9 @@ ignored_cache
 outputs
 
 *.jpg
-*.png
 # Allow committing the sample images
 !adobe_frames/*.jpg
+*.png
 
 fsdp_configs
 grounded_dino_ckpts
