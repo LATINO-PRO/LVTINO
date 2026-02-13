@@ -28,7 +28,10 @@ class WanTextEncoder(TextEncoderInterface):
         )
 
         self.tokenizer = HuggingfaceTokenizer(
-            name="wan_models/Wan2.1-T2V-1.3B/google/umt5-xxl/", seq_len=512, clean='whitespace')
+            name="google/umt5-xxl",
+            seq_len=512,
+            clean="whitespace",
+        )
 
     @property
     def device(self):

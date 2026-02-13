@@ -7,7 +7,7 @@ repo_id = "tianweiy/CausVid"
 subfolder = "bidirectional_checkpoint2"
 
 # Where to save
-target_dir = "./models/bidirectional_checkpoint2"
+target_dir = "./models"
 
 # Download everything in that subfolder
 snapshot_download(
