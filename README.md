@@ -113,7 +113,7 @@ python minimal_inference/LVTINO.py --help
 python minimal_inference/LVTINO_VIDUE.py --help
 ```
 
-### Problem A / B + Noise+JPEG
+### Problem A / B / Noise+JPEG
 Example:
 ```bash
 python minimal_inference/LVTINO.py \
