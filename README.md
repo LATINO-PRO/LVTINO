@@ -1,5 +1,10 @@
-# LVTINO
-**L**Atent **V**ideo consis**T**ency **IN**verse s**O**lver for High Definition Video Restoration
+# Official repository for **LVTINO**
+
+> **L**Atent **V**ideo consis**T**ency **IN**verse s**O**lver for High Definition Video Restoration
+
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=<USERNAME>.<REPO>)
+[![GitHub stars](https://img.shields.io/github/stars/LATINO-PRO/LVTINO.svg?style=social&label=Stars)](https://github.com/<USERNAME>/<REPO>/stargazers)
+---
 
 This repository contains the official implementation of **LVTINO**, a plug-and-play / zero-shot inverse solver for **high-definition video restoration** using priors encoded by **Video Consistency Models (VCMs)**.
 
