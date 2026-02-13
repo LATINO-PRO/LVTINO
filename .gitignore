@@ -182,8 +182,10 @@ ignored_cache
 outputs
 
 *.jpg
-# Allow committing the sample images
-!adobe_frames/*.jpg
+# Allow committing adobe_frames JPGs
+!adobe_frames/
+!adobe_frames/**/*
+!adobe_frames/**/*.jpg
 *.png
 
 fsdp_configs
