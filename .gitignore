@@ -1,5 +1,4 @@
 # Byte-compiled / optimized / DLL files
-model/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -206,6 +205,5 @@ VBench
 *.pt
 
 outputs/
-models/
 wan_models/
 LVTINO.egg*
