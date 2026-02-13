@@ -204,6 +204,9 @@ cogvideox_output
 VBench
 *.pt
 
+# Allow committing the two VIDUE checkpoints
+!VIDUE/pretrained_model/*.pt
+
 outputs/
 wan_models/
 LVTINO.egg*
