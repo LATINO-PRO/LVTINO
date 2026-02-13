@@ -2,7 +2,7 @@
 
 > **L**Atent **V**ideo consis**T**ency **IN**verse s**O**lver for High Definition Video Restoration
 
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=<USERNAME>.<REPO>)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=LATINO-PRO.LVTINO)
 [![GitHub stars](https://img.shields.io/github/stars/LATINO-PRO/LVTINO.svg?style=social&label=Stars)](https://github.com/<USERNAME>/<REPO>/stargazers)
 ---
 
