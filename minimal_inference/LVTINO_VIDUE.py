@@ -5,14 +5,15 @@ import csv
 import glob
 import random
 import argparse
-import subprocess
+import sys
+import importlib.util
+import types
 from typing import Tuple, List
 
 import numpy as np
 import torch
 import torch.nn.functional as F
 import torchmetrics
-import deepinv as dinv
 import imageio
 import lpips
 
@@ -38,7 +39,6 @@ from utils import (
 # -------------------------
 def _resize_tensor_chw(x: torch.Tensor, size_wh: Tuple[int, int]) -> torch.Tensor:
     """Resize [C,H,W] float tensor to (W,H) using area interpolation."""
-    _, _, _ = x.shape
     Wt, Ht = size_wh
     x4 = x.unsqueeze(0)
     x4 = torch.nn.functional.interpolate(x4, size=(Ht, Wt), mode="area", align_corners=None)
@@ -100,6 +100,78 @@ def numeric_key(p: str):
     stem = os.path.splitext(os.path.basename(p))[0]
     m = re.search(r"\d+", stem)
     return int(m.group()) if m else stem
+
+
+
+# -------------------------
+# VIDUE in-process runner
+# -------------------------
+def _load_module_from_path(module_name: str, path: str) -> types.ModuleType:
+    """Dynamically import a python file as a module."""
+    path = os.path.abspath(path)
+    mod_dir = os.path.dirname(path)
+    if mod_dir not in sys.path:
+        sys.path.insert(0, mod_dir)  # so `import model...` inside VIDUE works
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not import module from {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+def run_vidue_interpolation(
+    *,
+    infer_script: str,
+    default_data: str,
+    data_path: str,
+    model_path: str,
+    result_path: str,
+    n_outputs: int,
+    m: int,
+    n: int,
+    border: bool = True,
+    save_image: bool = True,
+    n_sequence: int = 4,
+    n_gpus: int = 1,
+    blur_deg: int = 1,
+) -> None:
+    """Run VIDUE interpolation by calling its Inference class directly."""
+    vidue = _load_module_from_path("_vidue_infer", infer_script)
+
+    # Match the script's default per-dataset settings
+    gt_path = ""
+    if default_data == "GOPRO":
+        gt_path = "./gopro"
+        n_sequence = 4
+        n_gpus = 1
+        blur_deg = 1
+    elif default_data == "Adobe":
+        gt_path = "./adobe"
+        n_sequence = 4
+        n_gpus = 1
+        blur_deg = 1
+
+    args = argparse.Namespace(
+        save_image=save_image,
+        border=border,
+        default_data=default_data,
+        data_path=data_path,
+        model_path=model_path,
+        result_path=result_path,
+        m=int(m),
+        n=int(n),
+        n_outputs=int(n_outputs),
+        gt_path=gt_path,
+        n_sequence=int(n_sequence),
+        n_GPUs=int(n_gpus),
+        blur_deg=int(blur_deg),
+        submodel="unet_18",
+        joinType="concat",
+        upmode="transpose",
+    )
+
+    Infer = vidue.Inference(args)
+    Infer.infer()
 
 
 # -------------------------
@@ -265,31 +337,34 @@ def main():
         y = forward_model(x_gt.to(dtype=torch.float32)).to(dtype=work_dtype)
         save_video_tensor(y.float(), os.path.join(out_dir, "observed_y.mp4"), fps=2)
 
-        # ---- 1) Write sparse observation frames for VIDUE
-        vid_dir_sparse = os.path.join(args.interp_input_root, f"{vid_id:05d}")
+        
+        # ---- 1) Write sparse observation frames for VIDUE (per-video sandbox)
+        per_video_input_root = os.path.join(args.interp_input_root, "_current_vidue")
+        vid_dir_sparse = os.path.join(per_video_input_root, f"{vid_id:05d}")
+
+        # Keep only this video in the VIDUE input folder (VIDUE enumerates subfolders in data_path)
+        if os.path.isdir(per_video_input_root):
+            shutil.rmtree(per_video_input_root, ignore_errors=True)
         os.makedirs(vid_dir_sparse, exist_ok=True)
 
-        # For SR8x8:
+        # For SR8x8: filename indices are spaced by temporal_factor
         for t in range(y.shape[0]):
             np_img = tensor_to_uint8_img(y[t])
             save_png(os.path.join(vid_dir_sparse, f"{t * args.temporal_factor:06d}.png"), np_img)
 
         # ---- 2) Run VIDUE interpolation
-        cmd = [
-            "python", args.infer_script,
-            "--default_data", args.infer_default_data,
-            "--data_path", args.interp_input_root,
-            "--model_path", args.infer_model_path,
-            "--result_path", args.interp_result_root,
-            "--n_outputs", str(args.infer_n_outputs),
-            "--m", str(args.infer_m),
-            "--n", str(args.infer_n),
-        ]
-        if args.infer_border:
-            cmd += ["--border"]
-
-        print("Running interpolation script:", " ".join(cmd))
-        subprocess.run(cmd, check=True)
+        run_vidue_interpolation(
+            infer_script=args.infer_script,
+            default_data=args.infer_default_data,
+            data_path=per_video_input_root,
+            model_path=args.infer_model_path,
+            result_path=args.interp_result_root,
+            n_outputs=args.infer_n_outputs,
+            m=args.infer_m,
+            n=args.infer_n,
+            border=args.infer_border,
+            save_image=True,
+        )
 
         # ---- 3) Load interpolated frames as x_init
         vid_dir_frames = os.path.join(args.interp_result_root, f"{vid_id:05d}")
@@ -333,8 +408,8 @@ def main():
         # Optional cleanup of sparse inputs
         try:
             import shutil
-            if os.path.isdir(vid_dir_sparse):
-                shutil.rmtree(vid_dir_sparse)
+            if os.path.isdir(per_video_input_root):
+                shutil.rmtree(per_video_input_root)
         except Exception as e:
             print(f"[WARN] Could not remove {vid_dir_sparse}: {e}")
 
