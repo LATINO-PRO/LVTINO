@@ -69,11 +69,6 @@ First try:
 pip install -r requirements.txt
 ```
 
-If you hit dependency conflicts, install the reduced set:
-```bash
-pip install -r requirements_short.txt
-```
-
 ### 4) Install this repo as a package
 ```bash
 pip install -e .
