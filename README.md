@@ -105,7 +105,7 @@ python download_CausVid.py
 ---
 
 
-## Running inference (minimal)
+## Running inference
 
 Check the available CLI flags:
 ```bash
@@ -180,9 +180,6 @@ python minimal_inference/LVTINO_VIDUE_optuna.py \
   --optuna_objective "lpips" \
   --optuna_only
 ```
-## Examples (TODO)
-
-Here we provide examples to run the codes: **TODO**.
 
 ## Acknowledgements
 
