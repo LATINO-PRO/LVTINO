@@ -21,8 +21,9 @@ This repository contains the official implementation of **LVTINO**, a plug-and-p
 
 LVTINO solves a variety of video inverse problems by combining:
 1. a **video generative prior** (VCM; here based on **Wan2.1-1.3B** and a **CausVid** fine-tuned checkpoint),
-2. a **measurement-consistency step** (proximal / data-fidelity operator),
-3. optional **warm-starting** using **VIDUE** for the most challenging setting (**Problem C** in the paper).
+2. an **image generative prior** (ICM; here based on **SDXL** and a **DMD2** fine-tuned checkpoint),
+3. a **measurement-consistency step** (proximal / data-fidelity operator),
+4. optional **warm-starting** using **VIDUE** for the most challenging setting (**Problem C** in the paper).
 
 This codebase is based on, and adapts components from:
 - **CausVid** (VCM backbone): https://github.com/tianweiy/CausVid  
