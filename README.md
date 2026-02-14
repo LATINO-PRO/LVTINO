@@ -11,6 +11,11 @@ This repository contains the official implementation of **LVTINO**, a plug-and-p
 - [**Paper (arXiv)**](https://arxiv.org/abs/2510.01339)
 - [**Web-Page**](https://latino-pro.github.io/LVTINO/)
 
+| Observed | LVTINO |
+|---|---|
+| [obs.mp4](https://latino-pro.github.io/LVTINO/static/videos/video1/obs.mp4) | [out.mp4](https://latino-pro.github.io/LVTINO/static/videos/video1/out.mp4) |
+
+
 ---
 
 ## Overview
