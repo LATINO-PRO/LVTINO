@@ -13,7 +13,7 @@ This repository contains the official implementation of **LVTINO**, a plug-and-p
 
 | Observed | LVTINO |
 |---|---|
-| [![obs](https://latino-pro.github.io/LVTINO/static/thumbs/video1_obs.gif)](https://latino-pro.github.io/LVTINO/static/videos/video1/obs.mp4) | [![out](https://latino-pro.github.io/LVTINO/static/thumbs/video1_out.gif)](https://latino-pro.github.io/LVTINO/static/videos/video1/out.mp4) |
+| [![obs](https://github.com/LATINO-PRO/LVTINO/blob/web-page/static/thumbs/video1_obs.gif)](https://latino-pro.github.io/LVTINO/static/videos/video1/obs.mp4) | [![out](https://github.com/LATINO-PRO/LVTINO/blob/web-page/static/thumbs/video1_out.gif)](https://latino-pro.github.io/LVTINO/static/videos/video1/out.mp4) |
 
 
 ---
