@@ -12,7 +12,7 @@ This repository contains the official implementation of **LVTINO**, a plug-and-p
 - [**Web-Page**](https://latino-pro.github.io/LVTINO/)
 
 <video controls muted playsinline loop width="800">
-  <source src="https://raw.githubusercontent.com/LATINO-PRO/LVTINO/gh-pages/static/videos/video1/out.mp4" type="video/mp4">
+  <source src="https://latino-pro.github.io/LVTINO/static/videos/video1/out.mp4" type="video/mp4">
 </video>
 
 
